@@ -1,8 +1,8 @@
-import express from "express"
+import express, { Request, Response } from "express"
 const app = express()
 
-app.get("/", (req, res)=> {
-    res.send("hello world")
+app.get("/", (req: Request, res: Response)=> {
+    res.send("hello")
 })
 
 app.listen(5000)
