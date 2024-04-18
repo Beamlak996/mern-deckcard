@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from "react"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [decks, setDecks] = useState([])
+  const [title, setTitle] = useState("")
+
+  const handleCreateDeck = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await fetch("http://localhost:5000/decks", {
+      method: "POST",
+      body: JSON.stringify({
+        title,
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    setTitle("")
+  }
+
+  useEffect(()=> {
+    const fetchDecks = async () => {
+      const response = await fetch("http://localhost:5000/decks");
+      const newDecks = await response.json()
+      setDecks(newDecks)
+    }
+    fetchDecks()
+  }, [])
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <main className="h-full flex flex-col items-center justify-center gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
+        {decks.map((deck: any) => (
+          <div key={deck.id} className="p-2 border rounded-md">
+            {deck.title}
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <form onSubmit={handleCreateDeck} className="flex gap-4 items-center">
+        <label htmlFor="deck-title">Deck Title</label>
+        <input
+          type="text"
+          id="deck-title"
+          value={title}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setTitle(e.target.value);
+          }}
+          className="border border-black focus:border-sky-400"
+        />
+        <button
+          type="submit"
+          className="p-2 rounded-md bg-sky-500 text-white hover:bg-sky-400 transition"
+        >
+          Create deck
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      </form>
+    </main>
+  );
 }
 
-export default App
+export default App;
