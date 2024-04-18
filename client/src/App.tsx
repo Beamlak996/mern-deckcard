@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { createDeck, deleteDeck, getDecks } from "./api/decks";
 
 function App() {
   const [decks, setDecks] = useState<any>([]);
@@ -6,35 +8,21 @@ function App() {
 
   const handleCreateDeck = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/decks", {
-      method: "POST",
-      body: JSON.stringify({
-        title,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const newDeck: any = await createDeck(title)
 
-    const newDeck: any = await response.json()
-
-    setDecks([...decks, newDeck])
+    setDecks([...decks, newDeck]);
     setTitle("");
   };
 
   const handleDeleteDeck = async (deckId: string) => {
-    setDecks(decks.filter((deck: any) => deck._id !== deckId))
-   await fetch(`http://localhost:5000/decks/${deckId}`, {
-      method: "DELETE",
-    });
-
+    await deleteDeck(deckId)
+    setDecks(decks.filter((deck: any) => deck._id !== deckId));
   };
 
   useEffect(() => {
     const fetchDecks = async () => {
-      const response = await fetch("http://localhost:5000/decks");
-      const newDecks = await response.json();
-      setDecks(newDecks);
+      const decks = await getDecks()
+      setDecks(decks);
     };
     fetchDecks();
   }, []);
@@ -45,7 +33,9 @@ function App() {
         {decks.map((deck: any) => (
           <div key={deck._id} className="p-2 border rounded-md">
             <div className="flex items-center justify-between">
-              <h2>{deck.title}</h2>
+              <Link to={`/decks/${deck._id}`}>
+                <h2>{deck.title}</h2>
+              </Link>
               <p
                 onClick={() => handleDeleteDeck(deck._id)}
                 className="py-1 px-2 flex items-center justify-center  hover:bg-slate-100 rounded-sm transition cursor-pointer text-muted-foreground"
