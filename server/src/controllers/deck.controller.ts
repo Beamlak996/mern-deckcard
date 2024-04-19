@@ -10,6 +10,14 @@ export const getDecksController = async (req: Request, res: Response) => {
 };
 
 
+// get a single deck controller
+export const getDeckController = async (req: Request, res: Response) => {
+  const deckId = req.params.deckId
+  const deck = await DeckModal.findById(deckId)
+  res.json(deck)
+}
+
+
 // create a deck contorller
 export const createDeckController = async (req: Request, res: Response) => {
   const newDeck = new DeckModal({

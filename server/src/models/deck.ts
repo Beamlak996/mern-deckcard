@@ -5,6 +5,7 @@ const ObjectId = Schema.ObjectId
 
 const DeckSchema = new Schema({
     title: String,
+    cards: [String],
 })
 
 
